@@ -1,0 +1,24 @@
+data:
+  path: "/home/vastai/zwg/age-gender-recognise/data/datasets"
+
+model:
+  model_name: "mobilenetv3_small"
+  img_size: 224
+
+train:
+  optimizer_name: adam
+  age_loss: "softmax_focal"
+  gender_loss: "binary_focal"
+  bfl:
+    gamma: 2.0
+    alpha: 0.25
+    epsilon: 1.e-8
+  sfl:
+    gamma: 2.0
+    alpha: 0.25
+    epsilon: 1.e-8
+  lr: 0.001
+  epochs: 100
+  batch_size: 12
+  age_num: 3
+  gender_num: 2
