@@ -107,7 +107,7 @@ class mobilenetv3_small(Model):
         out = self.hs3(self.bn3(self.linear3(out)))
         gender = self.gender(out)
         age = self.age(out)
-        return [gender, age]
+        return (gender, age)
 
 
 class mobilenetv3_large(Model):

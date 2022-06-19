@@ -20,9 +20,8 @@ def main(cfg):
             with tf.GradientTape() as tape:
                 logits = model(x_batch_train, training = True)
                 genger_loss = gender_loss_object(logits[0], y_batch_train[0])
-                print(logits[1].shape)
                 age_loss = age_loss_object(logits[1], y_batch_train[1:])
-            loss = genger_loss + age_loss
+                loss = genger_loss + age_loss
             # # Use the gradient tape to automatically retrieve
             # # the gradients of the trainable variables with respect to the loss.
             grads = tape.gradient(loss, model.trainable_weights)

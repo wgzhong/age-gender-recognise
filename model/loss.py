@@ -51,8 +51,8 @@ def get_loss(cfg):
     gender_loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
     if cfg.train.gender_loss == "binary_focal":
         gender_loss_object = binary_focal_loss(cfg)
-    # if cfg.train.age_loss == "softmax_focal":
-    #     age_loss_object = softmax_focal_loss(cfg)
+    if cfg.train.age_loss == "softmax_focal":
+        age_loss_object = softmax_focal_loss(cfg)
     return gender_loss_object, age_loss_object
 
 

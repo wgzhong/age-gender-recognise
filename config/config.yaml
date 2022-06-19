@@ -1,5 +1,5 @@
 data:
-  path: "/home/vastai/zwg/age-gender-recognise/data/datasets"
+  path: "/home/wgzhong/pywork/age-gender-recognise/data/datasets"
 
 model:
   model_name: "mobilenetv3_small"
