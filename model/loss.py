@@ -31,7 +31,6 @@ def softmax_focal_loss(cfg):
         probs = tf.nn.softmax(logits)
         y_pred = tf.clip_by_value(probs, epsilon, 1. - epsilon)
         # weight term and alpha term【因为y_true是只有1个元素为1其他元素为0的one-hot向量，所以对于每个样本，只有y_true位置为1的对应类别才有weight，其他都是0】这也是为什么网上有的版本会用到tf.gather函数，这个函数的作用就是只把有用的这个数取出来，可以省略一些0相关的运算。
-        label = np.squeeze(np.array(label)).astype(np.float32) 
         weight = tf.multiply(label, tf.pow(tf.subtract(1., y_pred), gamma))
         if alpha != 0.0:  # 我这实现中的alpha只是起到了调节loss倍数的作用（调节倍数对训练没影响，因为loss的梯度才是影响训练的关键），要想起到调节类别不均衡的作用，要替换成数组，数组长度和类别总数相同，每个元素表示对应类别的权重。另外[这篇](https://blog.csdn.net/Umi_you/article/details/80982190)博客也提到了，alpha在多分类Focal loss中没作用，也就是只能调节整体loss倍数，不过如果换成数组形式的话，其实是可以达到缓解类别不均衡问题的目的。
             alpha_t = tf.cast(label * alpha, tf.float32) + (tf.ones_like(label) - label) * tf.cast((1.0 - alpha), tf.float32)

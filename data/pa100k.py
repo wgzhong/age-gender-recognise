@@ -20,6 +20,7 @@ class ImageSequence(Sequence):
         self.batch_size = cfg["train"]["batch_size"]
         self.img_size = cfg["model"]["img_size"]
         self.mode = mode
+        self.shuffle = True
         self.images=[]
         self.labels=[]
         if self.mode == "train":
@@ -33,19 +34,21 @@ class ImageSequence(Sequence):
             self.images = self.read_txt(self.path+"/val_images_name.txt")
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
+        self.indexes = np.arange(self.num)
 
     def __getitem__(self, idx):
-        end_idx = (idx + 1) * self.batch_size+1
+        end_idx = (idx + 1) * self.batch_size
         if end_idx >= self.num:
             end_idx = self.num
-        sample_img_path = self.images[idx * self.batch_size+1: end_idx]
-        sample_label = self.labels[idx * self.batch_size+1: end_idx]
+        img_label_idx = self.indexes[idx * self.batch_size: end_idx]
+        sample_img_path = [self.images[k] for k in img_label_idx]
+        sample_label = [self.labels[k] for k in img_label_idx]
         imgs = []
         genders = []
         ages = []
         
         for img_name, label in zip(sample_img_path, sample_label):
-            # print(self.path+"/images/"+re.sub('\[|\]|\'','',img_name))
+            print(self.path+"/images/"+re.sub('\[|\]|\'','',img_name))
             img = cv2.imread(self.path+"/images/"+re.sub('\[|\]|\'','',img_name))
             img = cv2.resize(img, (self.img_size, self.img_size))
 
@@ -69,6 +72,7 @@ class ImageSequence(Sequence):
     def read_txt(self, path):
         contx=[]
         with open(path, 'r') as f:
+            next(f)
             contx = f.read().splitlines()
         return contx
 
@@ -79,7 +83,10 @@ if __name__=="__main__":
     file = open("../config/config.yaml", 'r', encoding="utf-8")
     cfg = yaml.safe_load(file)      
     train_gen = ImageSequence(cfg, "train")
-    for x,y in train_gen:
-        print(x)
-        print(y)
-
+    for epoch in range(2):
+        print(epoch)
+        train_gen.on_epoch_end()
+        for batch_number, (x, y) in enumerate(train_gen):
+            # print(batch_number)
+            a=1
+        
