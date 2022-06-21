@@ -6,8 +6,8 @@ def binary_focal_loss(cfg):
     epsilon = tf.constant(cfg["train"]["bfl"]["epsilon"], dtype=tf.float32)
     n_classes = cfg["train"]["gender_num"]
     # 得到y_true和y_pred
-    def cal_loss(logits, label):
-        y_true = tf.one_hot(label, n_classes)
+    def cal_loss(y_true, logits):
+        # y_true = tf.one_hot(label, n_classes)
         probs = tf.nn.sigmoid(logits)
         y_pred = tf.clip_by_value(probs, epsilon, 1. - epsilon)
         # 得到调节因子weight和alpha
@@ -27,7 +27,7 @@ def softmax_focal_loss(cfg):
     gamma = tf.constant(cfg["train"]["sfl"]["gamma"], dtype=tf.float32)
     epsilon = tf.constant(cfg["train"]["sfl"]["epsilon"], dtype=tf.float32)
     # y_true and y_pred
-    def cal_loss(logits, label):
+    def cal_loss(label, logits):
         probs = tf.nn.softmax(logits)
         y_pred = tf.clip_by_value(probs, epsilon, 1. - epsilon)
         # weight term and alpha term【因为y_true是只有1个元素为1其他元素为0的one-hot向量，所以对于每个样本，只有y_true位置为1的对应类别才有weight，其他都是0】这也是为什么网上有的版本会用到tf.gather函数，这个函数的作用就是只把有用的这个数取出来，可以省略一些0相关的运算。
@@ -46,8 +46,8 @@ def softmax_focal_loss(cfg):
     return cal_loss
 
 def get_loss(cfg):
-    age_loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
-    gender_loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
+    age_loss_object = tf.keras.losses.CategoricalCrossentropy()
+    gender_loss_object = tf.keras.losses.CategoricalCrossentropy()
     if cfg.train.gender_loss == "binary_focal":
         gender_loss_object = binary_focal_loss(cfg)
     if cfg.train.age_loss == "softmax_focal":

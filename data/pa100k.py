@@ -3,9 +3,10 @@ import numpy as np
 import cv2
 import yaml
 import re
+import tensorflow as tf
 import albumentations as A
 from tensorflow.keras.utils import Sequence
-
+from keras import backend as K
 transforms = A.Compose([
     A.ShiftScaleRotate(shift_limit=0.03125, scale_limit=0.20, rotate_limit=20, border_mode=cv2.BORDER_CONSTANT,
                        value=0, p=1.0),
@@ -17,6 +18,7 @@ transforms = A.Compose([
 class ImageSequence(Sequence):
     def __init__(self, cfg, mode):
         self.path = cfg["data"]["path"]
+        self.datamode = cfg["data"]["mode"]
         self.batch_size = cfg["train"]["batch_size"]
         self.img_size = cfg["model"]["img_size"]
         self.mode = mode
@@ -48,36 +50,97 @@ class ImageSequence(Sequence):
         ages = []
         
         for img_name, label in zip(sample_img_path, sample_label):
-            print(self.path+"/images/"+re.sub('\[|\]|\'','',img_name))
-            img = cv2.imread(self.path+"/images/"+re.sub('\[|\]|\'','',img_name))
-            img = cv2.resize(img, (self.img_size, self.img_size))
-
-            if self.mode == "train":
-                img = transforms(image=img)["image"]
-
+            path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
+            # path = "/home/vastai/zwg/pa100k/images/060605.jpg"
+            img = cv2.imread(path)
+            img = self.data_enhance(img)
             imgs.append(img)
             genders.append(int(label[0]))
             tmp=[int(label[2]), int(label[4]), int(label[6])]
             ages.append(tmp)
 
         imgs = np.asarray(imgs)/255.0
-        genders = np.asarray(genders)
-        ages = np.asarray(ages)
-        ages = np.array(ages).astype(np.float32)
+        genders = tf.convert_to_tensor(np.asarray(genders))
+        ages = tf.convert_to_tensor(np.array(ages).astype(np.float32))
         return imgs, (genders, ages)
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)
-    
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.images)
+
     def read_txt(self, path):
         contx=[]
         with open(path, 'r') as f:
             next(f)
             contx = f.read().splitlines()
         return contx
+    
+    def calcutzone(self, offset, v, is_h=False): #not center crop
+        if offset < 0:
+            a1=0
+            a2=v
+            return a1, a2
+        if is_h:
+            a1=0
+            a2=self.img_size
+            return a1, a2
+        else:
+            if offset%2>0:
+                a1=int((offset-1)/2)
+                a2=int((offset-1)/2+1)+self.img_size
+                return a1, a2
+            else:
+                a1=a2=int(offset/2)
+                a2=a2+self.img_size
+                return a1, a2
 
-    def on_epoch_end(self):
-        np.random.shuffle(self.images)
+    def calresizezone(self, offset, img, v, is_h=False):
+        if offset < 0:
+            return img
+        if is_h:
+            v = int(self.img_size/(self.img_size+offset)*v)
+            img=cv2.resize(img, (v, self.img_size))
+            return img
+        else:
+            v = int(self.img_size/(self.img_size+offset)*v)
+            img=cv2.resize(img, (self.img_size, v))
+            return img
+    
+    def fullpix(self, v):
+        a1=a2=0
+        if v<self.img_size:
+            offset=self.img_size-v
+            if offset%2>0:
+                a1=int((offset-1)/2)
+                a2=int((offset-1)/2)+1
+            else:
+                a1=a2=int(offset/2)
+        return a1,a2
+
+    def data_enhance(self, image):
+        (h,w,_) = image.shape
+        if h > self.img_size or w > self.img_size:
+            h_offset = h-self.img_size
+            w_offset = w-self.img_size
+            if self.datamode=="resize":
+                if h_offset>w_offset:
+                    image=self.calresizezone(h_offset, image, w, True)
+                else:
+                    image=self.calresizezone(w_offset, image, h)
+            elif self.datamode=="crop":
+                y1, y2 = self.calcutzone(h_offset, h, True)
+                x1, x2 = self.calcutzone(w_offset, w)
+                image = image[y1:y2, x1:x2]
+        (h,w,_) = image.shape
+        h1,h2 = self.fullpix(h)
+        w1,w2 = self.fullpix(w)
+        image = cv2.copyMakeBorder(image, h1,h2,w1,w2,cv2.BORDER_CONSTANT,value=[114,114,114])
+        if self.mode=="train":
+            image = transforms(image=image)["image"]
+        # cv2.imwrite("t.jpg", image)
+        return image
 
 if __name__=="__main__":
     file = open("../config/config.yaml", 'r', encoding="utf-8")

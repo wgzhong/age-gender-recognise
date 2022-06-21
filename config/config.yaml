@@ -1,5 +1,6 @@
 data:
   path: "/home/vastai/zwg/pa100k"
+  mode: "resize"
 
 model:
   model_name: "mobilenetv3_small"
@@ -19,6 +20,6 @@ train:
     epsilon: 1.e-8
   lr: 0.001
   epochs: 100
-  batch_size: 12
+  batch_size: 16
   age_num: 3
   gender_num: 2
