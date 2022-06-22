@@ -36,8 +36,12 @@ class ImageSequence(Sequence):
             self.images = self.read_txt(self.path+"/val_images_name.txt")
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
-        self.indexes = np.arange(self.num)
 
+        # np.random.seed(200)
+        # np.random.shuffle(self.images) 
+        # np.random.seed(200)
+        # np.random.shuffle(self.labels)
+        self.indexes = np.arange(self.num)
     def __getitem__(self, idx):
         end_idx = (idx + 1) * self.batch_size
         if end_idx >= self.num:
@@ -48,27 +52,31 @@ class ImageSequence(Sequence):
         imgs = []
         genders = []
         ages = []
-        
+        image_path = []
         for img_name, label in zip(sample_img_path, sample_label):
             path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
             # path = "/home/vastai/zwg/pa100k/images/060605.jpg"
             img = cv2.imread(path)
+            # img=cv2.resize(img, (self.img_size, self.img_size))
             img = self.data_enhance(img)
             imgs.append(img)
+            # print(path, int(label[0]))
             genders.append(int(label[0]))
             tmp=[int(label[2]), int(label[4]), int(label[6])]
             ages.append(tmp)
+            image_path.append(path)
 
         imgs = np.asarray(imgs)/255.0
-        genders = tf.convert_to_tensor(np.asarray(genders))
+        image_path = tf.convert_to_tensor(np.asarray(image_path))
+        genders = tf.convert_to_tensor(np.asarray(genders).astype(np.float32))
         ages = tf.convert_to_tensor(np.array(ages).astype(np.float32))
-        return imgs, (genders, ages)
+        return imgs, genders
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)
 
     def on_epoch_end(self):
-        np.random.shuffle(self.images)
+        np.random.shuffle(self.indexes)
 
     def read_txt(self, path):
         contx=[]
@@ -146,10 +154,8 @@ if __name__=="__main__":
     file = open("../config/config.yaml", 'r', encoding="utf-8")
     cfg = yaml.safe_load(file)      
     train_gen = ImageSequence(cfg, "train")
-    for epoch in range(2):
-        print(epoch)
+    for epoch in range(1):
         train_gen.on_epoch_end()
-        for batch_number, (x, y) in enumerate(train_gen):
-            # print(batch_number)
+        for batch_number, (x, y, z) in enumerate(train_gen):
             a=1
-        
+            # print(y[0],z)

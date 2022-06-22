@@ -7,7 +7,6 @@ def binary_focal_loss(cfg):
     n_classes = cfg["train"]["gender_num"]
     # 得到y_true和y_pred
     def cal_loss(y_true, logits):
-        # y_true = tf.one_hot(label, n_classes)
         probs = tf.nn.sigmoid(logits)
         y_pred = tf.clip_by_value(probs, epsilon, 1. - epsilon)
         # 得到调节因子weight和alpha
@@ -47,11 +46,11 @@ def softmax_focal_loss(cfg):
 
 def get_loss(cfg):
     age_loss_object = tf.keras.losses.CategoricalCrossentropy()
-    gender_loss_object = tf.keras.losses.CategoricalCrossentropy()
-    if cfg.train.gender_loss == "binary_focal":
-        gender_loss_object = binary_focal_loss(cfg)
-    if cfg.train.age_loss == "softmax_focal":
-        age_loss_object = softmax_focal_loss(cfg)
+    gender_loss_object = tf.keras.losses.BinaryCrossentropy()
+    # if cfg.train.gender_loss == "binary_focal":
+    #     gender_loss_object = binary_focal_loss(cfg)
+    # if cfg.train.age_loss == "softmax_focal":
+    #     age_loss_object = softmax_focal_loss(cfg)
     return gender_loss_object, age_loss_object
 
 

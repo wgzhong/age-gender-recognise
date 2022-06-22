@@ -60,25 +60,25 @@ def main(cfg):
         train_dataset.on_epoch_end()
         for step, (x_batch_train, y_batch_train) in enumerate(train_dataset):
             loss = train_step(x_batch_train, y_batch_train)
+            template = 'Epoch {}, step {}, gender_loss: {}, age_loss: {}, total Loss: {}, gender_accuracy: {}'
+            print(template.format(epoch + 1, step,
+                                    train_gender_loss.result(),
+                                    train_age_loss.result(),
+                                    loss,
+                                    train_gender_accuracy.result() * 100,
+                                    ))
         with train_summary_writer.as_default():
-            tf.summary.scalar('train_gender_loss', train_age_loss.result(), step=epoch)
+            tf.summary.scalar('train_age_loss', train_age_loss.result(), step=epoch)
             tf.summary.scalar('train_gender_loss', train_gender_loss.result(), step=epoch)
             tf.summary.scalar('train_gender_accuracy', train_gender_accuracy.result(), step=epoch)
         
-        for step, (x_batch_tval, y_batch_val) in enumerate(val_dataset):
-            loss = val_step(x_batch_tval, y_batch_val)
-        with val_summary_writer.as_default():
-            tf.summary.scalar('val_gender_loss', val_age_loss.result(), step=epoch)
-            tf.summary.scalar('val_gender_loss', val_gender_loss.result(), step=epoch)
-            tf.summary.scalar('val_gender_accuracy', val_gender_accuracy.result(), step=epoch)
+        # for step, (x_batch_tval, y_batch_val) in enumerate(val_dataset):
+        #     loss = val_step(x_batch_tval, y_batch_val)
+        # with val_summary_writer.as_default():
+        #     tf.summary.scalar('val_gender_loss', val_age_loss.result(), step=epoch)
+        #     tf.summary.scalar('val_gender_loss', val_gender_loss.result(), step=epoch)
+        #     tf.summary.scalar('val_gender_accuracy', val_gender_accuracy.result(), step=epoch)
 
-        template = 'Epoch {}, gender_loss: {}, age_loss: {}, total Loss: {}, gender_accuracy: {}'
-        print(template.format(epoch + 1,
-                                train_gender_loss.result(),
-                                train_age_loss.result(),
-                                loss,
-                                train_gender_accuracy.result() * 100,
-                                ))
         train_gender_loss.reset_states()
         train_age_loss.reset_states()
         train_gender_accuracy.reset_states()
