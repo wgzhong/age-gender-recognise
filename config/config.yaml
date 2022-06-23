@@ -4,8 +4,8 @@ data:
 
 model:
   model_name: "mobilenetv3_small"
-  img_size: 224
-
+  img_size_h: 224
+  img_size_w: 112
 train:
   optimizer_name: sgd
   age_loss: "softmax_focal"
@@ -18,8 +18,8 @@ train:
     gamma: 2.0
     alpha: 0.25
     epsilon: 1.e-8
-  lr: 0.005
+  lr: 0.001
   epochs: 500
   batch_size: 32
   age_num: 3
-  gender_num: 1
+  gender_num: 2

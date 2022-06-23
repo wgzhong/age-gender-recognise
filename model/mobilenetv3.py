@@ -20,6 +20,12 @@ class hsigmoid(Model):
         out = self.relu6(x + 3) / 6
         return out
 
+# def hsigmoid(x):
+#     return tf.nn.relu6(x + 3) / 6
+
+# def hswish(x):
+#     return x * hsigmoid(x)
+
 class SeModule(Model):
     def __init__(self, in_size, reduction=4):
         super(SeModule, self).__init__()
@@ -102,8 +108,7 @@ class mobilenetv3_small(Model):
         out = self.hs1(self.bn1(self.conv1(self.pad1(x))))
         out = self.bneck(out)
         out = self.hs2(self.bn2(self.conv2(out)))
-        out = AveragePooling2D(7)(out)
-        out = Reshape([out.shape[-1]])(out)
+        out = AveragePooling2D((7,3))(out)
         out = self.hs3(self.bn3(self.linear3(out)))
         gender = self.gender(out)
         age = self.age(out)
@@ -159,7 +164,7 @@ def test():
     file = open("../config/config.yaml", 'r', encoding="utf-8")
     cfg = yaml.safe_load(file)  
     model = mobilenetv3_small(cfg)
-    model.build(input_shape=(12,224,224,3))
+    model.build(input_shape=(12,224,112,3))
     model.summary()
 if __name__=="__main__":
     test()

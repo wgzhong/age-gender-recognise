@@ -20,7 +20,8 @@ class ImageSequence(Sequence):
         self.path = cfg["data"]["path"]
         self.datamode = cfg["data"]["mode"]
         self.batch_size = cfg["train"]["batch_size"]
-        self.img_size = cfg["model"]["img_size"]
+        self.img_size_h = cfg["model"]["img_size_h"]
+        self.img_size_w = cfg["model"]["img_size_w"]
         self.mode = mode
         self.shuffle = True
         self.images=[]
@@ -55,10 +56,12 @@ class ImageSequence(Sequence):
         image_path = []
         for img_name, label in zip(sample_img_path, sample_label):
             path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
-            # path = "/home/vastai/zwg/pa100k/images/060605.jpg"
+            # path = "/home/vastai/zwg/pa100k/images/003275.jpg"
             img = cv2.imread(path)
             # img=cv2.resize(img, (self.img_size, self.img_size))
-            img = self.data_enhance(img)
+            img = self.data_enhance(img, re.sub('\[|\]|\'','',img_name))
+            # print(img.shape, path)
+            # exit(0)
             imgs.append(img)
             # print(path, int(label[0]))
             genders.append(int(label[0]))
@@ -68,9 +71,9 @@ class ImageSequence(Sequence):
 
         imgs = np.asarray(imgs)/255.0
         image_path = tf.convert_to_tensor(np.asarray(image_path))
-        genders = tf.convert_to_tensor(np.asarray(genders).astype(np.float32))
+        genders = tf.convert_to_tensor(np.asarray(genders))
         ages = tf.convert_to_tensor(np.array(ages).astype(np.float32))
-        return imgs, genders
+        return imgs, (genders, ages, image_path)
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)
@@ -92,34 +95,32 @@ class ImageSequence(Sequence):
             return a1, a2
         if is_h:
             a1=0
-            a2=self.img_size
+            a2=self.img_size_h
             return a1, a2
         else:
             if offset%2>0:
                 a1=int((offset-1)/2)
-                a2=int((offset-1)/2+1)+self.img_size
+                a2=int((offset-1)/2+1)+self.img_size_w
                 return a1, a2
             else:
                 a1=a2=int(offset/2)
-                a2=a2+self.img_size
+                a2=a2+self.img_size_w
                 return a1, a2
 
-    def calresizezone(self, offset, img, v, is_h=False):
-        if offset < 0:
-            return img
+    def calresizezone(self, img, radio, v, is_h=False):
         if is_h:
-            v = int(self.img_size/(self.img_size+offset)*v)
-            img=cv2.resize(img, (v, self.img_size))
+            v = int(radio*v)
+            img=cv2.resize(img, (v, self.img_size_h))
             return img
         else:
-            v = int(self.img_size/(self.img_size+offset)*v)
-            img=cv2.resize(img, (self.img_size, v))
+            v = int(radio*v)
+            img=cv2.resize(img, (self.img_size_w, v))
             return img
     
-    def fullpix(self, v):
+    def fullpix(self, v, img_size):
         a1=a2=0
-        if v<self.img_size:
-            offset=self.img_size-v
+        if v<img_size:
+            offset=img_size-v
             if offset%2>0:
                 a1=int((offset-1)/2)
                 a2=int((offset-1)/2)+1
@@ -127,27 +128,32 @@ class ImageSequence(Sequence):
                 a1=a2=int(offset/2)
         return a1,a2
 
-    def data_enhance(self, image):
+    def data_enhance(self, image, img_name):
         (h,w,_) = image.shape
-        if h > self.img_size or w > self.img_size:
-            h_offset = h-self.img_size
-            w_offset = w-self.img_size
-            if self.datamode=="resize":
-                if h_offset>w_offset:
-                    image=self.calresizezone(h_offset, image, w, True)
+        # print(h,w)
+        if h > self.img_size_h or w > self.img_size_w:
+            h_offset = h-self.img_size_h
+            w_offset = w-self.img_size_w
+            h_radio = self.img_size_h / h
+            w_radio = self.img_size_w / w
+            # print(h_offset, w_offset)
+            if self.datamode=="resize" and (h_offset>0 or w_offset>0):
+                if h_radio > w_radio:
+                    image=self.calresizezone(image, w_radio, w, True)
                 else:
-                    image=self.calresizezone(w_offset, image, h)
+                    image=self.calresizezone(image, h_radio, h)
             elif self.datamode=="crop":
                 y1, y2 = self.calcutzone(h_offset, h, True)
                 x1, x2 = self.calcutzone(w_offset, w)
                 image = image[y1:y2, x1:x2]
         (h,w,_) = image.shape
-        h1,h2 = self.fullpix(h)
-        w1,w2 = self.fullpix(w)
-        image = cv2.copyMakeBorder(image, h1,h2,w1,w2,cv2.BORDER_CONSTANT,value=[114,114,114])
-        if self.mode=="train":
-            image = transforms(image=image)["image"]
-        # cv2.imwrite("t.jpg", image)
+        h1,h2 = self.fullpix(h, self.img_size_h)
+        w1,w2 = self.fullpix(w, self.img_size_w)
+        image = cv2.copyMakeBorder(image, h1,h2,w1,w2,cv2.BORDER_CONSTANT,value=[0,0,0])
+        # if self.mode=="train":
+        #     image = transforms(image=image)["image"]
+        # cv2.imwrite("./pre/"+img_name, image)
+        # exit(0)
         return image
 
 if __name__=="__main__":
@@ -156,6 +162,6 @@ if __name__=="__main__":
     train_gen = ImageSequence(cfg, "train")
     for epoch in range(1):
         train_gen.on_epoch_end()
-        for batch_number, (x, y, z) in enumerate(train_gen):
+        for batch_number, (x, y) in enumerate(train_gen):
             a=1
             # print(y[0],z)
