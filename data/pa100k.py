@@ -38,10 +38,10 @@ class ImageSequence(Sequence):
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
 
-        # np.random.seed(200)
-        # np.random.shuffle(self.images) 
-        # np.random.seed(200)
-        # np.random.shuffle(self.labels)
+        np.random.seed(200)
+        np.random.shuffle(self.images) 
+        np.random.seed(200)
+        np.random.shuffle(self.labels)
         self.indexes = np.arange(self.num)
     def __getitem__(self, idx):
         end_idx = (idx + 1) * self.batch_size
@@ -58,7 +58,7 @@ class ImageSequence(Sequence):
             path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
             # path = "/home/vastai/zwg/pa100k/images/003275.jpg"
             img = cv2.imread(path)
-            # img=cv2.resize(img, (self.img_size, self.img_size))
+            # img=cv2.resize(img, (self.img_size_w, self.img_size_h))
             img = self.data_enhance(img, re.sub('\[|\]|\'','',img_name))
             # print(img.shape, path)
             # exit(0)
@@ -69,11 +69,12 @@ class ImageSequence(Sequence):
             ages.append(tmp)
             image_path.append(path)
 
-        imgs = np.asarray(imgs)/255.0
+        imgs = np.asarray(imgs).astype(np.int32)#/255.0
         image_path = tf.convert_to_tensor(np.asarray(image_path))
-        genders = tf.convert_to_tensor(np.asarray(genders))
+        genders = tf.convert_to_tensor(np.asarray(genders).astype(np.int32))
         ages = tf.convert_to_tensor(np.array(ages).astype(np.float32))
-        return imgs, (genders, ages, image_path)
+        return imgs, (genders, ages)
+        # return imgs, genders
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)

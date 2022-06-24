@@ -7,7 +7,7 @@ model:
   img_size_h: 224
   img_size_w: 112
 train:
-  optimizer_name: sgd
+  optimizer_name: adam
   age_loss: "softmax_focal"
   gender_loss: "binary_focal"
   bfl:
@@ -18,8 +18,8 @@ train:
     gamma: 2.0
     alpha: 0.25
     epsilon: 1.e-8
-  lr: 0.001
+  lr: 0.0001
   epochs: 500
-  batch_size: 32
+  batch_size: 128
   age_num: 3
-  gender_num: 2
+  gender_num: 1
