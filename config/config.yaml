@@ -4,12 +4,11 @@ data:
 
 model:
   model_name: "mobilenetv3_small"
-  img_size_h: 224
-  img_size_w: 112
+  img_size_h: 256
+  img_size_w: 128
 train:
   optimizer_name: adam
-  age_loss: "softmax_focal"
-  gender_loss: "binary_focal"
+  loss: "binary_focal"
   bfl:
     gamma: 2.0
     alpha: 0.25
@@ -21,5 +20,4 @@ train:
   lr: 0.0001
   epochs: 500
   batch_size: 128
-  age_num: 3
-  gender_num: 1
+  num_classes: 4

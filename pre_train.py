@@ -25,12 +25,12 @@ def main(cfg):
     x = base_model(x, training=False)
 
     x = GlobalAveragePooling2D(name='average_pool')(x)
-    x = Dense(64)(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-    gender = Dense(cfg["train"]["gender_num"])(x)
-    age = Dense(cfg["train"]["age_num"])(x)
-    model = keras.Model(inputs, [gender, age])
-    # model = keras.Model(inputs, gender)
+    x = Dense(128)(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    gender = Dense(cfg["train"]["gender_num"], activation='sigmoid')(x)
+    age = Dense(cfg["train"]["age_num"], activation='softmax')(x)
+    # model = keras.Model(inputs, [gender, age])
+    model = keras.Model(inputs, gender)
     #datasets
     train_dataset = ImageSequence(cfg, "train")
     val_dataset = ImageSequence(cfg, "val")
@@ -38,7 +38,7 @@ def main(cfg):
     gender_loss_object, age_loss_object = get_loss(cfg)
 
     model.compile(optimizer=optimizer,
-              loss=[gender_loss_object, age_loss_object],
+              loss=[gender_loss_object],
               metrics=['accuracy'])
     model.summary()
     model.fit(train_dataset,

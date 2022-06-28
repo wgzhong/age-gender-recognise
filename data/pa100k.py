@@ -51,8 +51,7 @@ class ImageSequence(Sequence):
         sample_img_path = [self.images[k] for k in img_label_idx]
         sample_label = [self.labels[k] for k in img_label_idx]
         imgs = []
-        genders = []
-        ages = []
+        ag = []
         image_path = []
         for img_name, label in zip(sample_img_path, sample_label):
             path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
@@ -64,17 +63,14 @@ class ImageSequence(Sequence):
             # exit(0)
             imgs.append(img)
             # print(path, int(label[0]))
-            genders.append(int(label[0]))
-            tmp=[int(label[2]), int(label[4]), int(label[6])]
-            ages.append(tmp)
+            tmp=[int(label[0]), int(label[2]), int(label[4]), int(label[6])]
+            ag.append(tmp)
             image_path.append(path)
 
-        imgs = np.asarray(imgs).astype(np.int32)#/255.0
+        imgs = np.asarray(imgs)/255.0
         image_path = tf.convert_to_tensor(np.asarray(image_path))
-        genders = tf.convert_to_tensor(np.asarray(genders).astype(np.int32))
-        ages = tf.convert_to_tensor(np.array(ages).astype(np.float32))
-        return imgs, (genders, ages)
-        # return imgs, genders
+        age_gender = tf.convert_to_tensor(np.asarray(ag).astype(np.int32))
+        return imgs, age_gender, image_path
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)
