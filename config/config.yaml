@@ -1,5 +1,5 @@
 data:
-  path: "/home/vastai/zwg/pa100k"
+  path: "/home/wgzhong/pywork/datasets/pa100k"
   mode: "resize"
 
 model:
