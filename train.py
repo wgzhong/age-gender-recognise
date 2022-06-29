@@ -1,21 +1,25 @@
 import tensorflow as tf
 from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from model.mobilenetv3_factory import build_mobilenetv3
+from model.lenet5 import Lenet5
 from model.loss import *
 from config.config import *
 from data.pa100k import *
 from util import *
+from tqdm import tqdm
 import hydra
     
 @hydra.main(config_path="./config/", config_name="config.yaml")
 def main(cfg):
     save_model_dir="./save_model"
-    model = build_mobilenetv3(
-        "small",
-        input_shape=(cfg.model.img_size_h, cfg.model.img_size_w, 3),
-        num_classes=4,
-        width_multiplier=1.0,
-        )
+    # model = build_mobilenetv3(
+    #     "small",
+    #     input_shape=(cfg.model.img_size_h, cfg.model.img_size_w, 3),
+    #     num_classes=4,
+    #     width_multiplier=1.0,
+    #     )
+    model = Lenet5(cfg)
+    model.build(input_shape=(1, cfg.model.img_size_h, cfg.model.img_size_w, 3))
     model.summary()
     optimizer = get_optimizer(cfg)
     loss_object = get_loss(cfg)
@@ -53,39 +57,34 @@ def main(cfg):
         loss = loss_object(y, logits)
         val_total_loss(loss)
         val_accuracy(y, logits)
-
+        
     for epoch in range(cfg.train.epochs):
         train_dataset.on_epoch_end()
-        for step, (x_batch_train, y_batch_train, image_path) in enumerate(train_dataset):
+        loop = tqdm(enumerate(train_dataset), total =len(train_dataset))
+        for step, (x_batch_train, y_batch_train, image_path) in loop:
             train_step(x_batch_train, y_batch_train, image_path)
-        template = 'Epoch {}, total Loss: {}, train_accuracy: {}'
-        print(template.format(epoch + 1,
-                            train_total_loss.result(),
-                            train_accuracy.result() * 100
-                            ))
-        train_total_loss.reset_states()
-        train_accuracy.reset_states()
+            loop.set_description(f'Train Epoch [{epoch}/{cfg.train.epochs}]')
+            loop.set_postfix(acc = train_accuracy.result().numpy() * 100, loss = train_total_loss.result().numpy())
         with train_summary_writer.as_default():
             tf.summary.scalar('train_total_loss', train_total_loss.result(), step=epoch)
             tf.summary.scalar('train_accuracy', train_accuracy.result(), step=epoch)
-        
-        if epoch%5==0 and epoch>0:
-            val_dataset.on_epoch_end()
-            for step, (x_batch_tval, y_batch_val, image_path) in enumerate(val_dataset):
-                val_step(x_batch_tval, y_batch_val, image_path)
-            with val_summary_writer.as_default():
-                tf.summary.scalar('val_total_loss', val_total_loss.result(), step=epoch)
-                tf.summary.scalar('val_accuracy', val_accuracy.result(), step=epoch)
-            val_template = 'val dataset: total Loss: {}, val_accuracy: {}'
-            print(val_template.format(
-                            val_total_loss.result(),
-                            val_accuracy.result() * 100,
-                            ))
-            val_total_loss.reset_states()
-            val_accuracy.reset_states()
+        train_total_loss.reset_states()
+        train_accuracy.reset_states()
+        ########## val
+        val_dataset.on_epoch_end()
+        loop = tqdm(enumerate(val_dataset), total =len(val_dataset))
+        for step, (x_batch_tval, y_batch_val, image_path) in loop:
+            val_step(x_batch_tval, y_batch_val, image_path)
+            loop.set_description(f'Val Epoch [{epoch}/{cfg.train.epochs}]')
+            loop.set_postfix(acc = val_accuracy.result().numpy() * 100, loss = val_total_loss.result().numpy())
+        with val_summary_writer.as_default():
+            tf.summary.scalar('val_total_loss', val_total_loss.result(), step=epoch)
+            tf.summary.scalar('val_accuracy', val_accuracy.result(), step=epoch)
+        val_total_loss.reset_states()
+        val_accuracy.reset_states()
         if epoch % 50 == 0 and epoch>0:
             model.save_weights(filepath=save_model_dir+"epoch-{}".format(epoch), save_format='tf')
-    # save weights
+        # save weights
     model.save_weights(filepath=save_model_dir+"model", save_format='tf') #保存训练的权值
     
 

@@ -102,13 +102,13 @@ class BatchNormalization(tf.keras.layers.Layer):
     """
     def __init__(
             self,
-            momentum: float=0.99,
+            momentum: float=0.98,
             name="BatchNormalization",
     ):
         super().__init__(name=name)
 
         self.bn = tf.keras.layers.BatchNormalization(
-            momentum=0.99,
+            momentum=0.98,
             name="BatchNormalization",
         )
 

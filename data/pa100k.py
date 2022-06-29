@@ -27,14 +27,14 @@ class ImageSequence(Sequence):
         self.images=[]
         self.labels=[]
         if self.mode == "train":
-            self.labels = self.read_txt(self.path+"/train_label.txt")
-            self.images = self.read_txt(self.path+"/train_images_name.txt")
+            self.labels = self.read_txt("./data/pa100k/train_label.txt")
+            self.images = self.read_txt("./data/pa100k/train_images_name.txt")
         elif self.mode == "test":
-            self.labels = self.read_txt(self.path+"/test_label.txt")
-            self.images = self.read_txt(self.path+"/test_images_name.txt")
+            self.labels = self.read_txt("./data/pa100k/test_label.txt")
+            self.images = self.read_txt("./data/pa100k/test_images_name.txt")
         elif self.mode == "val":
-            self.labels = self.read_txt(self.path+"/val_label.txt")
-            self.images = self.read_txt(self.path+"/val_images_name.txt")
+            self.labels = self.read_txt("./data/pa100k/val_label.txt")
+            self.images = self.read_txt("./data/pa100k/val_images_name.txt")
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
 
@@ -54,7 +54,7 @@ class ImageSequence(Sequence):
         ag = []
         image_path = []
         for img_name, label in zip(sample_img_path, sample_label):
-            path= self.path+"/images/"+re.sub('\[|\]|\'','',img_name)
+            path= self.path+re.sub('\[|\]|\'','',img_name)
             # path = "/home/vastai/zwg/pa100k/images/003275.jpg"
             img = cv2.imread(path)
             # img=cv2.resize(img, (self.img_size_w, self.img_size_h))
@@ -147,8 +147,8 @@ class ImageSequence(Sequence):
         h1,h2 = self.fullpix(h, self.img_size_h)
         w1,w2 = self.fullpix(w, self.img_size_w)
         image = cv2.copyMakeBorder(image, h1,h2,w1,w2,cv2.BORDER_CONSTANT,value=[0,0,0])
-        # if self.mode=="train":
-        #     image = transforms(image=image)["image"]
+        if self.mode=="train":
+            image = transforms(image=image)["image"]
         # cv2.imwrite("./pre/"+img_name, image)
         # exit(0)
         return image
