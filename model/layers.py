@@ -75,7 +75,7 @@ class Squeeze(tf.keras.layers.Layer):
         return x
 
 
-class GlobalAveragePooling2D(tf.keras.layers.Layer):
+class MyGlobalAveragePooling2D(tf.keras.layers.Layer):
     """Return tensor of output shape (batch_size, rows, cols, channels)
     where rows and cols are equal to 1. Output shape of
     `tf.keras.layer.GlobalAveragePooling2D` is (batch_size, channels),
@@ -96,7 +96,7 @@ class GlobalAveragePooling2D(tf.keras.layers.Layer):
         return self.gap(input)
 
 
-class BatchNormalization(tf.keras.layers.Layer):
+class MyBatchNormalization(tf.keras.layers.Layer):
     """Searching fo MobileNetV3: All our convolutional layers
     use batch-normalization layers with average decay of 0.99.
     """
@@ -149,7 +149,7 @@ class ConvNormAct(tf.keras.layers.Layer):
         )
 
         _available_normalization = {
-            "bn": BatchNormalization(),
+            "bn": MyBatchNormalization(),
             }
         self.norm = get_layer(norm_layer, _available_normalization, Identity())
 
@@ -212,7 +212,7 @@ class Bneck(tf.keras.layers.Layer):
             depthwise_regularizer=tf.keras.regularizers.l2(l2_reg),
             use_bias=False,
         )
-        self.bn = BatchNormalization(name="Depthwise/BatchNormalization")
+        self.bn = MyBatchNormalization(name="Depthwise/BatchNormalization")
         if self.use_se:
             self.se = SEBottleneck(
                 l2_reg=l2_reg,
@@ -270,7 +270,7 @@ class SEBottleneck(tf.keras.layers.Layer):
 
     def build(self, input_shape):
         input_channels = int(input_shape[3])
-        self.gap = GlobalAveragePooling2D()
+        self.gap = MyGlobalAveragePooling2D()
         self.conv1 = ConvNormAct(
             input_channels // self.reduction,
             kernel_size=1,
@@ -318,7 +318,7 @@ class LastStage(tf.keras.layers.Layer):
             use_bias=False,
             l2_reg=l2_reg,
         )
-        self.gap = GlobalAveragePooling2D()
+        self.gap = MyGlobalAveragePooling2D()
         self.conv2 = ConvNormAct(
             last_channels,
             kernel_size=1,

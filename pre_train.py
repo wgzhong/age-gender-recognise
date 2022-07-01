@@ -1,11 +1,10 @@
 import tensorflow as tf
-from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint
+from model.layers import LastStage
 from tensorflow.keras.layers import *
-from model.mobilenetv3 import *
 from model.loss import *
 from config.config import *
 from data.pa100k import *
-from util import *
+from metric import *
 import hydra
 import os
 
@@ -16,33 +15,27 @@ def main(cfg):
         os.makedirs(save_model_dir)
     base_model = keras.applications.MobileNetV2(
         weights="imagenet",  
-        input_shape=(224, 112, 3),
+        input_shape=(cfg.model.img_size_h, cfg.model.img_size_w, 3),
         include_top=False) 
     base_model.trainable = False
-    preprocess_input = tf.keras.layers.experimental.preprocessing.Rescaling(1./127.5, offset= -1)
-    inputs = keras.Input(shape=(224, 112, 3))
-    x = preprocess_input(inputs)
-    x = base_model(x, training=False)
-
-    x = GlobalAveragePooling2D(name='average_pool')(x)
-    x = Dense(128)(x)
-    x = tf.keras.layers.Dropout(0.2)(x)
-    gender = Dense(cfg["train"]["gender_num"], activation='sigmoid')(x)
-    age = Dense(cfg["train"]["age_num"], activation='softmax')(x)
-    # model = keras.Model(inputs, [gender, age])
-    model = keras.Model(inputs, gender)
+    inputs = keras.Input(shape=(cfg.model.img_size_h, cfg.model.img_size_w, 3))
+    x = base_model(inputs, training=False)
+    last_stage = LastStage(72, 160, cfg["train"]["num_classes"], l2_reg=1e-5)
+    x = last_stage(x)
+    model = keras.Model(inputs, x)
     #datasets
     train_dataset = ImageSequence(cfg, "train")
     val_dataset = ImageSequence(cfg, "val")
     optimizer = get_optimizer(cfg)
-    gender_loss_object, age_loss_object = get_loss(cfg)
+    loss_object = get_loss(cfg)
+    train_accuracy = BinaryFocalLossAccuracy('accuracy')
 
     model.compile(optimizer=optimizer,
-              loss=[gender_loss_object],
-              metrics=['accuracy'])
+              loss=[loss_object],
+              metrics=[train_accuracy])
     model.summary()
     model.fit(train_dataset,
-                    epochs=100,
+                    epochs=cfg.train.epochs,
                     validation_data=val_dataset)
 
     # #train

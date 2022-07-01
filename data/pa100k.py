@@ -27,14 +27,14 @@ class ImageSequence(Sequence):
         self.images=[]
         self.labels=[]
         if self.mode == "train":
-            self.labels = self.read_txt("./data/pa100k/train_label.txt")
-            self.images = self.read_txt("./data/pa100k/train_images_name.txt")
+            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/train_label.txt")
+            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/train_images_name.txt")
         elif self.mode == "test":
-            self.labels = self.read_txt("./data/pa100k/test_label.txt")
-            self.images = self.read_txt("./data/pa100k/test_images_name.txt")
+            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/test_label.txt")
+            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/test_images_name.txt")
         elif self.mode == "val":
-            self.labels = self.read_txt("./data/pa100k/val_label.txt")
-            self.images = self.read_txt("./data/pa100k/val_images_name.txt")
+            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/val_label.txt")
+            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/val_images_name.txt")
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
 
@@ -70,7 +70,9 @@ class ImageSequence(Sequence):
         imgs = np.asarray(imgs)/255.0
         image_path = tf.convert_to_tensor(np.asarray(image_path))
         age_gender = tf.convert_to_tensor(np.asarray(ag).astype(np.int32))
+        # return imgs, age_gender
         return imgs, age_gender, image_path
+        
 
     def __len__(self):
         return math.ceil(self.num / self.batch_size)

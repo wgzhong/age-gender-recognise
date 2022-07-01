@@ -17,7 +17,7 @@ train:
     gamma: 2.0
     alpha: 0.25
     epsilon: 1.e-8
-  lr: 0.0001
+  lr: 0.001
   epochs: 500
   batch_size: 64
   num_classes: 4

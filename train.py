@@ -5,21 +5,27 @@ from model.lenet5 import Lenet5
 from model.loss import *
 from config.config import *
 from data.pa100k import *
-from util import *
+from metric import *
 from tqdm import tqdm
 import hydra
-    
+import os
+def model_save(save_model_dir, model):
+    if not os.path.exists(save_model_dir):
+        os.mkdir(save_model_dir)  
+    model.save(save_model_dir)
+
 @hydra.main(config_path="./config/", config_name="config.yaml")
 def main(cfg):
-    save_model_dir="./save_model"
+    save_model_dir="./save_model/"
     # model = build_mobilenetv3(
     #     "small",
     #     input_shape=(cfg.model.img_size_h, cfg.model.img_size_w, 3),
     #     num_classes=4,
     #     width_multiplier=1.0,
     #     )
-    model = Lenet5(cfg)
-    model.build(input_shape=(1, cfg.model.img_size_h, cfg.model.img_size_w, 3))
+    # model = Lenet5(cfg)
+    # model.build(input_shape=(1, cfg.model.img_size_h, cfg.model.img_size_w, 3))
+    model = tf.keras.models.load_model("/home/vastai/zwg/age-gender-recognise/outputs/2022-07-01/16-49-59/save_model")
     model.summary()
     optimizer = get_optimizer(cfg)
     loss_object = get_loss(cfg)
@@ -82,10 +88,9 @@ def main(cfg):
             tf.summary.scalar('val_accuracy', val_accuracy.result(), step=epoch)
         val_total_loss.reset_states()
         val_accuracy.reset_states()
-        if epoch % 50 == 0 and epoch>0:
-            model.save_weights(filepath=save_model_dir+"epoch-{}".format(epoch), save_format='tf')
-        # save weights
-    model.save_weights(filepath=save_model_dir+"model", save_format='tf') #保存训练的权值
+        if epoch % 1 == 0 and epoch>0:
+            model_save(save_model_dir, model)
+    model_save(save_model_dir, model) #保存训练的权值
     
 
 
