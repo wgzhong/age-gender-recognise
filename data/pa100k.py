@@ -27,14 +27,14 @@ class ImageSequence(Sequence):
         self.images=[]
         self.labels=[]
         if self.mode == "train":
-            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/train_label.txt")
-            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/train_images_name.txt")
+            self.labels = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/train_label.txt")
+            self.images = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/train_images_name.txt")
         elif self.mode == "test":
-            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/test_label.txt")
-            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/test_images_name.txt")
+            self.labels = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/test_label.txt")
+            self.images = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/test_images_name.txt")
         elif self.mode == "val":
-            self.labels = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/val_label.txt")
-            self.images = self.read_txt("/home/vastai/zwg/age-gender-recognise/data/pa100k/val_images_name.txt")
+            self.labels = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/val_label.txt")
+            self.images = self.read_txt("/home/wgzhong/pywork/age-gender-recognise/data/pa100k/val_images_name.txt")
         assert(len(self.labels)==len(self.images))
         self.num=len(self.labels)
 

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-saved_model_dir = "/home/vastai/zwg/age-gender-recognise/outputs/2022-07-01/16-49-59/save_model"
+saved_model_dir = "/home/wgzhong/pywork/age-gender-recognise/outputs/2022-07-02/01-59-14/save_model"
 converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 converter.target_spec.supported_types = [tf.float16]

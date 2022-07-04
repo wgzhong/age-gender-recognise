@@ -1,0 +1,29 @@
+[2022-07-02 01:59:24,316][tensorflow][WARNING] - No training configuration found in save file, so the model was *not* compiled. Compile it manually.
+[2022-07-02 02:07:04,804][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:07:15,675][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:07:19,690][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:11:09,122][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:11:19,548][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:11:23,516][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:15:15,948][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:15:26,503][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:15:30,218][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:19:21,618][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:19:32,225][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:19:36,196][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:23:26,289][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:23:36,766][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:23:40,750][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:27:32,470][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:27:43,020][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:27:46,707][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:31:38,818][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:31:49,499][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:31:53,142][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:35:44,572][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:35:55,266][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:35:58,895][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:39:49,987][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+[2022-07-02 02:40:00,682][absl][WARNING] - Found untraced functions such as Conv3x3_layer_call_fn, Conv3x3_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, restored_function_body, restored_function_body while saving (showing 5 of 749). These functions will not be directly callable after loading.
+[2022-07-02 02:40:04,338][tensorflow][INFO] - Assets written to: ./save_model/assets
+[2022-07-02 02:43:55,179][tensorflow][WARNING] - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.

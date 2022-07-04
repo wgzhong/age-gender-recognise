@@ -57,4 +57,10 @@ def cirte(logits):
         info = info + "AgeLess18"
     print(info)
 
+def read_txt(path):
+    contx=[]
+    with open(path, 'r') as f:
+        next(f)
+        contx = f.read().splitlines()
+    return contx
 

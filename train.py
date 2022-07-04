@@ -23,9 +23,13 @@ def main(cfg):
     #     num_classes=4,
     #     width_multiplier=1.0,
     #     )
-    # model = Lenet5(cfg)
-    # model.build(input_shape=(1, cfg.model.img_size_h, cfg.model.img_size_w, 3))
-    model = tf.keras.models.load_model("/home/vastai/zwg/age-gender-recognise/outputs/2022-07-01/16-49-59/save_model")
+    
+    model = tf.keras.models.load_model("/home/wgzhong/pywork/age-gender-recognise/outputs/2022-07-01/21-44-35/save_model/")
+    
+    # checkpoint = tf.train.Checkpoint(model) # myAwesomeModel，这是你原来保存的checkpoint时的model名字
+    # checkpoint.restore(tf.train.latest_checkpoint('/home/wgzhong/pywork/age-gender-recognise/outputs/2022-06-30/07-48-28')) # 恢复最新的checkpoint
+
+
     model.summary()
     optimizer = get_optimizer(cfg)
     loss_object = get_loss(cfg)
