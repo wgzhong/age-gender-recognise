@@ -24,12 +24,7 @@ def main(cfg):
     #     width_multiplier=1.0,
     #     )
     
-    model = tf.keras.models.load_model("/home/wgzhong/pywork/age-gender-recognise/outputs/2022-07-01/21-44-35/save_model/")
-    
-    # checkpoint = tf.train.Checkpoint(model) # myAwesomeModel，这是你原来保存的checkpoint时的model名字
-    # checkpoint.restore(tf.train.latest_checkpoint('/home/wgzhong/pywork/age-gender-recognise/outputs/2022-06-30/07-48-28')) # 恢复最新的checkpoint
-
-
+    model = tf.keras.models.load_model("./outputs/2022-07-01/21-44-35/save_model/")
     model.summary()
     optimizer = get_optimizer(cfg)
     loss_object = get_loss(cfg)

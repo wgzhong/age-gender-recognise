@@ -8,7 +8,7 @@ import time
 
 @hydra.main(config_path="./config/", config_name="config.yaml")
 def test_datasest(cfg):
-    model = tf.keras.models.load_model("/home/wgzhong/pywork/age-gender-recognise/outputs/2022-07-02/01-59-14/save_model")
+    model = tf.keras.models.load_model("./outputs/2022-07-02/01-59-14/save_model")
     model.summary()
     test_dataset = ImageSequence(cfg, "test")
 
@@ -28,7 +28,7 @@ def test_datasest(cfg):
     print("test avg acc is ", total_acc/len(test_dataset)*100)
 
 def test_single_pic(pic_path):
-    model = tf.keras.models.load_model("/home/wgzhong/pywork/age-gender-recognise/outputs/2022-07-02/01-59-14/save_model")
+    model = tf.keras.models.load_model("./outputs/2022-07-02/01-59-14/save_model")
     model.summary()
     start = time.time()
     img = cv2.imread(pic_path)
