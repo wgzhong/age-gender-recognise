@@ -22,6 +22,14 @@ limitations under the License.
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../shared/tfjs-examples.css" />
+  
+<script type="text/javascript">
+  function onOpenCvReady() {
+      console.log('OpenCV.js status: Ready.')
+  }
+</script>
+
+<script async src="http://localhost:5000/web_model/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 </head>
 
 <style>
@@ -77,7 +85,8 @@ limitations under the License.
 
       <div id="predictions"></div>
 
-      <img style="display: none" id="cat" src="000001.jpg" width=128 height=256 />
+      <canvas id="canvasOutput"></canvas>
+      <img style="display: none" id="test" src="000001.jpg" />
     </section>
 
     <script type="module" src="index.js"></script>
